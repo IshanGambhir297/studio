@@ -8,7 +8,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const ReferUserInDistressInputSchema = z.object({
@@ -50,7 +49,6 @@ const prompt = ai.definePrompt({
   }
   `,
   config: {
-    model: googleAI.model('gemini-1.5-flash'),
     safetySettings: [
       {
         category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
