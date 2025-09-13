@@ -40,14 +40,12 @@ export default function LoginPage() {
         await createUserWithEmailAndPassword(auth, email, password);
         toast({
           title: 'Success',
-          description: 'Account created successfully!',
+          description: 'Account created successfully! You can now sign in.',
         });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
-        toast({ title: 'Success', description: 'Signed in successfully!' });
+        // Let the AuthGuard handle the redirect
       }
-      // The AuthGuard will handle the redirect
-      // router.push('/chat');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -63,9 +61,7 @@ export default function LoginPage() {
     setIsGoogleLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
-      toast({ title: 'Success', description: 'Signed in with Google!' });
-      // The AuthGuard will handle the redirect
-      // router.push('/chat');
+      // Let the AuthGuard handle the redirect
     } catch (error: any) {
       toast({
         variant: 'destructive',
