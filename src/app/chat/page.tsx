@@ -39,12 +39,23 @@ import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import { Badge } from '@/components/ui/badge';
 
 type Message = {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Timestamp;
+  sentiment?: string;
+};
+
+const sentimentColors: { [key: string]: string } = {
+  happy: 'bg-green-200 text-green-800',
+  sad: 'bg-blue-200 text-blue-800',
+  anxious: 'bg-yellow-200 text-yellow-800',
+  stressed: 'bg-orange-200 text-orange-800',
+  neutral: 'bg-gray-200 text-gray-800',
+  severe_distress: 'bg-red-200 text-red-800',
 };
 
 export default function ChatPage() {
@@ -73,6 +84,7 @@ export default function ChatPage() {
             role: 'user',
             content: data.userMessage,
             timestamp: data.timestamp,
+            sentiment: data.sentiment,
           });
           if (data.aiMessage) {
             newMessages.push({
@@ -161,15 +173,30 @@ export default function ChatPage() {
                       </AvatarFallback>
                     </Avatar>
                   )}
-                  <div
+                   <div
                     className={cn(
-                      'max-w-[70%] rounded-2xl px-4 py-2',
-                      message.role === 'user'
-                        ? 'rounded-br-none bg-primary text-primary-foreground'
-                        : 'rounded-bl-none bg-muted'
+                      'flex flex-col gap-1',
+                      message.role === 'user' ? 'items-end' : 'items-start'
                     )}
                   >
-                    <p className="text-sm">{message.content}</p>
+                    <div
+                      className={cn(
+                        'max-w-max rounded-2xl px-4 py-2',
+                        message.role === 'user'
+                          ? 'rounded-br-none bg-primary text-primary-foreground'
+                          : 'rounded-bl-none bg-muted'
+                      )}
+                    >
+                      <p className="text-sm">{message.content}</p>
+                    </div>
+                    {message.role === 'user' && message.sentiment && (
+                      <Badge
+                        variant="outline"
+                        className={cn('capitalize', sentimentColors[message.sentiment] || 'bg-gray-200 text-gray-800')}
+                      >
+                        {message.sentiment.replace(/_/g, ' ')}
+                      </Badge>
+                    )}
                   </div>
                   {message.role === 'user' && (
                     <Avatar className="h-8 w-8">
