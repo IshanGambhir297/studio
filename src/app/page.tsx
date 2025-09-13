@@ -11,7 +11,7 @@ export default function Home() {
         <div className="container flex h-14 items-center">
           <div className="mr-4 flex items-center">
             <Icons.Logo className="mr-2 h-6 w-6" />
-            <span className="font-bold">Mindful AI</span>
+            <span className="font-bold">MentalCare</span>
           </div>
           <div className="flex flex-1 items-center justify-end space-x-2">
             <nav className="flex items-center">
@@ -29,10 +29,10 @@ export default function Home() {
         <div className="container relative flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center">
           <div className="mx-auto max-w-2xl text-center">
             <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-              Your Personal AI for Mental Wellness
+              Your Personal AI Mental Health Assistant
             </h1>
             <p className="mt-6 text-lg text-muted-foreground">
-              Mindful AI is here to listen. Engage in a conversation with an empathetic AI that understands your feelings and offers supportive words when you need them most.
+              MentalCare is here to listen. Engage in a conversation with an empathetic AI that understands your feelings and offers supportive words when you need them most.
             </p>
             <div className="mt-10">
               <Button size="lg" asChild>

@@ -74,7 +74,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="mb-8 flex items-center gap-2">
         <Icons.Logo className="h-8 w-8 text-primary" />
-        <h1 className="text-3xl font-bold tracking-tight text-white">Mindful AI</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-white">MentalCare</h1>
       </div>
       <Tabs defaultValue="email" className="w-full max-w-sm">
         <TabsList className="grid w-full grid-cols-2">

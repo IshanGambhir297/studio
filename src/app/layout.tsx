@@ -6,8 +6,8 @@ import AuthGuard from '@/components/auth-guard';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Mindful AI - Your AI Mental Health Assistant',
-    template: '%s | Mindful AI',
+    default: 'MentalCare - Your AI Mental Health Assistant',
+    template: '%s | MentalCare',
   },
   description: 'An AI-powered chat application to support your mental wellness journey.',
 };

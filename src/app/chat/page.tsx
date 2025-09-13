@@ -135,7 +135,7 @@ export default function ChatPage() {
         <CardHeader className="flex flex-row items-center justify-between border-b">
           <div className="flex items-center gap-3">
             <Icons.Logo className="h-8 w-8 text-primary" />
-            <h1 className="font-headline text-xl font-bold tracking-tight">Mindful AI</h1>
+            <h1 className="font-headline text-xl font-bold tracking-tight">MentalCare</h1>
           </div>
           <Button variant="ghost" size="icon" onClick={handleSignOut} aria-label="Sign Out">
             <LogOut className="h-5 w-5" />
