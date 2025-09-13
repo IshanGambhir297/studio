@@ -9,6 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const AnalyzeUserSentimentInputSchema = z.object({
@@ -39,7 +40,7 @@ const prompt = ai.definePrompt({
 
 Message: {{{message}}}`, 
   config: {
-    model: 'googleai/gemini-2.5-flash',
+    model: googleAI.model('gemini-1.5-flash'),
     safetySettings: [
       {
         category: 'HARM_CATEGORY_DANGEROUS_CONTENT',

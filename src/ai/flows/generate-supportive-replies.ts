@@ -14,6 +14,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const GenerateSupportiveReplyInputSchema = z.object({
@@ -43,7 +44,7 @@ Sentiment: {{{sentiment}}}
 Only generate a reply if the sentiment is 'sad', 'anxious', or 'stressed'. For any other sentiment (like 'happy' or 'neutral'), you must return an empty string for the reply. Never judge or dismiss the user's feelings.
 `,
   config: {
-    model: 'googleai/gemini-2.5-flash',
+    model: googleAI.model('gemini-1.5-flash'),
   },
 });
 
