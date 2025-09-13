@@ -63,7 +63,7 @@ export async function sendMessageAction(formData: FormData) {
       timestamp: Timestamp.now(),
     });
 
-    revalidatePath('/chat');
+    revalidatePath('/');
 
     return {
       aiMessage,
@@ -83,7 +83,7 @@ export async function deleteHistoryAction() {
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      revalidatePath('/chat');
+      revalidatePath('/');
       return {};
     }
 
@@ -93,7 +93,7 @@ export async function deleteHistoryAction() {
     });
     await batch.commit();
 
-    revalidatePath('/chat');
+    revalidatePath('/');
     return {};
   } catch (error) {
     console.error('Error deleting history:', error);
