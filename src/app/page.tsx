@@ -86,8 +86,14 @@ function ChatPage() {
   const [isSheetOpen, setSheetOpen] = useState(false);
 
   useEffect(() => {
-    console.log("API Key:", process.env.GEMINI_API_KEY);
-    console.log("Firebase Config:", app.options);
+    if (!app.options.apiKey) {
+      toast({
+        variant: 'destructive',
+        title: 'Firebase Configuration Error',
+        description: 'Firebase is not configured. Please check your environment variables.',
+      });
+      return;
+    }
     
     const q = query(
       collection(db, 'conversations'),
@@ -410,5 +416,3 @@ function ChatPage() {
 }
 
 export default ChatPage;
-
-    

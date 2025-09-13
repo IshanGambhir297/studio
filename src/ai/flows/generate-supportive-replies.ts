@@ -40,7 +40,7 @@ const generateSupportiveReplyPrompt = ai.definePrompt({
 User Message: {{{userMessage}}}
 Sentiment: {{{sentiment}}}
 
-Only generate a reply if the sentiment is 'sad', 'anxious', or 'stressed'. For any other sentiment (like 'happy' or 'neutral'), you must return an empty string for the reply. Never judge or dismiss the user's feelings.
+Never judge or dismiss the user's feelings.
 `,
 });
 
@@ -60,6 +60,7 @@ const generateSupportiveReplyFlow = ai.defineFlow(
     outputSchema: GenerateSupportiveReplyOutputSchema,
   },
   async input => {
+    // Only call the AI if the sentiment is one that needs a supportive reply.
     if (!['sad', 'anxious', 'stressed'].includes(input.sentiment)) {
       return { reply: '' };
     }

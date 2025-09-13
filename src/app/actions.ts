@@ -71,8 +71,12 @@ export async function sendMessageAction(formData: FormData) {
     };
   } catch (error) {
     console.error('Error processing message:', error);
+    let errorMessage = 'An error occurred while processing your message. Please try again.';
+    if (error instanceof Error) {
+        errorMessage = error.message;
+    }
     return {
-      error: 'An error occurred while processing your message. Please try again.',
+      error: errorMessage,
     };
   }
 }
