@@ -31,36 +31,17 @@ const GenerateSupportiveReplyOutputSchema = z.object({
 
 export type GenerateSupportiveReplyOutput = z.infer<typeof GenerateSupportiveReplyOutputSchema>;
 
-const checkIfReplyIsNecessary = ai.defineTool({
-  name: 'checkIfReplyIsNecessary',
-  description: 'Check if a reply is necessary based on the user message and sentiment.',
-  inputSchema: z.object({
-    sentiment: z.string().describe("The sentiment of the user's message."),
-    userMessage: z.string().describe('The user message to check.'),
-  }),
-  outputSchema: z.boolean().describe('True if a reply is necessary, false otherwise.'),
-}, async (input) => {
-  // Implement the logic to determine if a reply is necessary based on sentiment and message.
-  // For example, only reply if the sentiment is negative or neutral.
-  const negativeSentiment = ['sad', 'anxious', 'stressed'];
-  if (negativeSentiment.includes(input.sentiment.toLowerCase())) {
-    return true;
-  }
-  return false;
-});
-
 const generateSupportiveReplyPrompt = ai.definePrompt({
   name: 'generateSupportiveReplyPrompt',
   input: {schema: GenerateSupportiveReplyInputSchema},
   output: {schema: GenerateSupportiveReplyOutputSchema},
-  tools: [checkIfReplyIsNecessary],
   prompt: `You are a mental health support chatbot. Generate a short, supportive reply (one or two sentences) to the user's message, given its sentiment.
 
-  User Message: {{{userMessage}}}
-  Sentiment: {{{sentiment}}}
+User Message: {{{userMessage}}}
+Sentiment: {{{sentiment}}}
 
-  If the checkIfReplyIsNecessary tool returns false, then return an empty string.
-  `,
+Only generate a reply if the sentiment is 'sad', 'anxious', or 'stressed'. For any other sentiment, return an empty string for the reply.
+`,
 });
 
 /**
@@ -79,11 +60,6 @@ const generateSupportiveReplyFlow = ai.defineFlow(
     outputSchema: GenerateSupportiveReplyOutputSchema,
   },
   async input => {
-    const isReplyNecessary = await checkIfReplyIsNecessary(input);
-    if (!isReplyNecessary) {
-      return { reply: '' };
-    }
-
     const {output} = await generateSupportiveReplyPrompt(input);
     return output!;
   }

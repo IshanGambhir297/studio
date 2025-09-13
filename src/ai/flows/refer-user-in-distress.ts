@@ -38,10 +38,34 @@ const prompt = ai.definePrompt({
   Message: {{{message}}}
 
   Respond with JSON. The \"shouldRefer\" field must be true if the user expresses thoughts of self-harm, suicide, or severe emotional crisis.
-  The referralMessage should contain the following text: \"⚠️ Please reach out to a professional. Helpline: +91-XXXXXXXXXX\" if shouldRefer is true.
+  The referralMessage should contain the following text: \"⚠️ Please reach out to a professional. Helpline: 988\" if shouldRefer is true.
   Otherwise, shouldRefer is false and referralMessage is an empty string.
 
   Ensure that the output is valid JSON and nothing else. Do not include any extra text or explanation.
   Here is the output JSON schema:
   {
-    \
+    "shouldRefer": boolean,
+    "referralMessage": string
+  }
+  `,
+  config: {
+    safetySettings: [
+      {
+        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+        threshold: 'BLOCK_NONE',
+      },
+    ],
+  },
+});
+
+const referUserInDistressFlow = ai.defineFlow(
+  {
+    name: 'referUserInDistressFlow',
+    inputSchema: ReferUserInDistressInputSchema,
+    outputSchema: ReferUserInDistressOutputSchema,
+  },
+  async input => {
+    const {output} = await prompt(input);
+    return output!;
+  }
+);
