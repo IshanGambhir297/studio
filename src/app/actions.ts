@@ -13,16 +13,17 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { revalidatePath } from 'next/cache';
-
-const GUEST_USER_ID = 'guest_user';
+import { auth } from 'firebase-admin';
 
 const sendMessageSchema = z.object({
   message: z.string().min(1),
+  userId: z.string().min(1, { message: 'User must be authenticated.' }),
 });
 
 export async function sendMessageAction(formData: FormData) {
   const rawData = {
     message: formData.get('message'),
+    userId: formData.get('userId'),
   };
 
   const validatedFields = sendMessageSchema.safeParse(rawData);
@@ -33,7 +34,7 @@ export async function sendMessageAction(formData: FormData) {
     };
   }
 
-  const { message } = validatedFields.data;
+  const { message, userId } = validatedFields.data;
 
   try {
     const { sentiment, isDistress, aiMessage } = await processUserMessage({ message });
@@ -44,7 +45,7 @@ export async function sendMessageAction(formData: FormData) {
     }
 
     await addDoc(collection(db, 'conversations'), {
-      userId: GUEST_USER_ID,
+      userId: userId,
       userMessage: message,
       aiMessage,
       sentiment,
@@ -69,9 +70,27 @@ export async function sendMessageAction(formData: FormData) {
   }
 }
 
-export async function deleteHistoryAction() {
+const deleteHistorySchema = z.object({
+  userId: z.string().min(1, { message: 'User must be authenticated.' }),
+});
+
+export async function deleteHistoryAction(formData: FormData) {
+  const rawData = {
+    userId: formData.get('userId'),
+  };
+
+  const validatedFields = deleteHistorySchema.safeParse(rawData);
+
+  if (!validatedFields.success) {
+    return {
+      error: 'Invalid input.',
+    };
+  }
+  
+  const { userId } = validatedFields.data;
+
   try {
-    const q = query(collection(db, 'conversations'), where('userId', '==', GUEST_USER_ID));
+    const q = query(collection(db, 'conversations'), where('userId', '==', userId));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
