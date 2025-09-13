@@ -92,7 +92,7 @@ export default function LoginPage() {
             <CardHeader>
               <CardTitle>Welcome</CardTitle>
               <CardDescription>
-                Sign up to create a new account, or use the demo account below. 
+                First, <b>Sign Up</b> with the demo account details below. Then, you can use <b>Sign In</b>.
                 <br/>
                 <b>Email:</b> demo@example.com | <b>Password:</b> 123456
               </CardDescription>
