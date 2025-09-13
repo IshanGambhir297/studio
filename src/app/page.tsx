@@ -28,7 +28,7 @@ export default function Home() {
       <main className="flex-1">
         <div className="container relative flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center">
           <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
+            <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
               Your Personal AI Mental Health Assistant
             </h1>
             <p className="mt-6 text-lg text-gray-400">
