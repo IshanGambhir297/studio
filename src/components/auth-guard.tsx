@@ -6,38 +6,39 @@ import { useEffect } from 'react';
 import { LoaderCircle } from 'lucide-react';
 
 const publicPaths = ['/'];
+const protectedPaths = ['/chat'];
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
-  const isPublicPath = publicPaths.includes(pathname);
+  const isPublic = publicPaths.includes(pathname);
+  const isProtected = protectedPaths.includes(pathname);
+  const isLoginPage = pathname === '/login';
 
   useEffect(() => {
-    if (loading) return;
-
-    // If user is logged in and tries to access a public-only path (like landing), redirect to chat
-    if (user && isPublicPath) {
-      router.replace('/chat');
-      return;
-    }
-    
-    // If user is logged in and tries to access login, redirect to chat
-    if (user && pathname === '/login') {
-      router.replace('/chat');
+    if (loading) {
+      // While loading, don't do any redirects.
+      // The loading screen from the provider or this guard will be shown.
       return;
     }
 
-    // If user is not logged in and tries to access a protected path, redirect to login
-    if (!user && !isPublicPath && pathname !== '/login') {
-      router.replace('/login');
-      return;
+    // If we have a user
+    if (user) {
+      // and they are on the login page, redirect them to chat.
+      if (isLoginPage) {
+        router.replace('/chat');
+      }
+    } else { // If we don't have a user
+      // and they are trying to access a protected page, redirect to login.
+      if (isProtected) {
+        router.replace('/login');
+      }
     }
-
-
-  }, [user, loading, router, pathname, isPublicPath]);
-
+  }, [user, loading, router, pathname, isPublic, isProtected, isLoginPage]);
+  
+  // Show a loading spinner while auth state is being determined.
   if (loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
@@ -45,16 +46,23 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-  
-  // Prevent flashing content while redirecting
-  if ((!user && !isPublicPath && pathname !== '/login') || (user && pathname === '/login')) {
+
+  // Prevent rendering of pages during redirection to avoid content flashing.
+  if (!user && isProtected) {
     return (
-       <div className="flex h-screen w-full items-center justify-center bg-background">
+      <div className="flex h-screen w-full items-center justify-center bg-background">
         <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
   }
 
-
+  if (user && isLoginPage) {
+     return (
+       <div className="flex h-screen w-full items-center justify-center bg-background">
+        <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+  
   return <>{children}</>;
 }

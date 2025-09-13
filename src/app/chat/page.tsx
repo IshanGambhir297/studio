@@ -38,6 +38,7 @@ import { Icons } from '@/components/icons';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 type Message = {
   id: string;
@@ -49,6 +50,7 @@ type Message = {
 export default function ChatPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isPending, startTransition] = useTransition();
@@ -98,7 +100,7 @@ export default function ChatPage() {
 
   const handleSignOut = async () => {
     await signOut(auth);
-    // AuthGuard will handle redirection
+    router.push('/login');
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
