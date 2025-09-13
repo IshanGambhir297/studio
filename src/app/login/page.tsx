@@ -92,7 +92,9 @@ export default function LoginPage() {
             <CardHeader>
               <CardTitle>Welcome</CardTitle>
               <CardDescription>
-                Sign in or create an account to continue.
+                Sign up to create a new account, or use the demo account below. 
+                <br/>
+                <b>Email:</b> demo@example.com | <b>Password:</b> 123456
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -185,5 +187,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    
