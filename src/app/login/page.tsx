@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  GoogleAuthProvider,
 } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
@@ -22,12 +23,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Icons } from '@/components/icons';
 import { LoaderCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleAuthAction = async (action: 'signIn' | 'signUp') => {
     setIsLoading(true);
@@ -39,7 +43,7 @@ export default function LoginPage() {
         await signInWithEmailAndPassword(auth, email, password);
         toast({ title: 'Success', description: 'Signed in successfully!' });
       }
-      // Router will redirect via AuthGuard
+      router.push('/chat');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -56,7 +60,7 @@ export default function LoginPage() {
     try {
       await signInWithPopup(auth, googleProvider);
       toast({ title: 'Success', description: 'Signed in with Google!' });
-      // Router will redirect via AuthGuard
+      router.push('/chat');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -82,9 +86,9 @@ export default function LoginPage() {
         <TabsContent value="email">
           <Card>
             <CardHeader>
-              <CardTitle>Email & Password</CardTitle>
+              <CardTitle>Welcome</CardTitle>
               <CardDescription>
-                Sign in or create an account with your email.
+                Sign in or create an account to continue.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -116,16 +120,16 @@ export default function LoginPage() {
                 onClick={() => handleAuthAction('signIn')}
                 disabled={isLoading}
               >
-                {isLoading && <LoaderCircle className="mr-2 animate-spin" />}
+                {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                 Sign In
               </Button>
               <Button
-                variant="secondary"
+                variant="outline"
                 className="w-full"
                 onClick={() => handleAuthAction('signUp')}
                 disabled={isLoading}
               >
-                {isLoading && <LoaderCircle className="mr-2 animate-spin" />}
+                 {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                 Sign Up
               </Button>
             </CardFooter>
@@ -146,7 +150,7 @@ export default function LoginPage() {
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <LoaderCircle className="mr-2 animate-spin" />
+                  <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <svg
                     className="mr-2 h-4 w-4"
