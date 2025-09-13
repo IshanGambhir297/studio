@@ -5,8 +5,11 @@ import { Toaster } from '@/components/ui/toaster';
 import AuthGuard from '@/components/auth-guard';
 
 export const metadata: Metadata = {
-  title: 'Mindful AI',
-  description: 'Your AI Mental Health Assistant',
+  title: {
+    default: 'Mindful AI - Your AI Mental Health Assistant',
+    template: '%s | Mindful AI',
+  },
+  description: 'An AI-powered chat application to support your mental wellness journey.',
 };
 
 export default function RootLayout({
