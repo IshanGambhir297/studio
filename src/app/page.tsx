@@ -13,9 +13,8 @@ import {
 } from 'firebase/firestore';
 import { sendMessageAction, deleteHistoryAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/use-auth';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -52,12 +51,13 @@ import {
   PanelLeft,
   Search,
   Trash2,
-  LogOut,
 } from 'lucide-react';
 import { Icons } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+
+const GUEST_USER_ID = 'guest_user';
 
 type Message = {
   id: string;
@@ -78,7 +78,6 @@ const sentimentColors: { [key: string]: string } = {
 
 function ChatPage() {
   const { toast } = useToast();
-  const { user, loading, signInWithGoogle, signOut } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -98,14 +97,9 @@ function ChatPage() {
       return;
     }
     
-    if (!user) {
-      setMessages([]);
-      return;
-    }
-
     const q = query(
       collection(db, 'conversations'),
-      where('userId', '==', user.uid),
+      where('userId', '==', GUEST_USER_ID),
       orderBy('timestamp', 'asc')
     );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -138,7 +132,7 @@ function ChatPage() {
       });
     });
     return () => unsubscribe();
-  }, [toast, user]);
+  }, [toast]);
 
   useEffect(() => {
     if (viewportRef.current) {
@@ -151,7 +145,7 @@ function ChatPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!input.trim() || isPending || !user) return;
+    if (!input.trim() || isPending) return;
 
     const userInput = input;
     setInput('');
@@ -159,7 +153,6 @@ function ChatPage() {
     startTransition(async () => {
       const formData = new FormData();
       formData.append('message', userInput);
-      formData.append('userId', user.uid);
 
       const result = await sendMessageAction(formData);
 
@@ -178,11 +171,8 @@ function ChatPage() {
   };
 
   const handleDeleteHistory = async () => {
-    if (!user) return;
     startDeleteTransition(async () => {
-      const formData = new FormData();
-      formData.append('userId', user.uid);
-      const result = await deleteHistoryAction(formData);
+      const result = await deleteHistoryAction();
       if (result.error) {
         toast({
           variant: 'destructive',
@@ -230,13 +220,12 @@ function ChatPage() {
                         className="pl-8"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        disabled={!user}
                       />
                     </div>
                     <Separator />
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="destructive" className="w-full" disabled={isDeleting || !user}>
+                        <Button variant="destructive" className="w-full" disabled={isDeleting}>
                           {isDeleting ? <LoaderCircle className="animate-spin" /> : <Trash2 />}
                           Delete History
                         </Button>
@@ -264,26 +253,6 @@ function ChatPage() {
               Mindful AI
             </h1>
           </div>
-          <div className="flex items-center gap-4">
-            {loading ? (
-              <LoaderCircle className="h-6 w-6 animate-spin" />
-            ) : user ? (
-              <>
-                <Button variant="ghost" size="icon" onClick={signOut}>
-                  <LogOut className="h-5 w-5" />
-                  <span className="sr-only">Sign Out</span>
-                </Button>
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
-                  <AvatarFallback>
-                    {user.displayName?.charAt(0) || <User />}
-                  </AvatarFallback>
-                </Avatar>
-              </>
-            ) : (
-              <Button onClick={signInWithGoogle}>Sign in with Google</Button>
-            )}
-          </div>
         </CardHeader>
         <div className="flex flex-1 overflow-hidden">
           <div className="hidden w-80 flex-col border-r bg-background/50 p-4 md:flex">
@@ -294,13 +263,12 @@ function ChatPage() {
                   className="pl-8"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  disabled={!user}
                 />
               </div>
               <Separator className="mb-4" />
                <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" className="w-full" disabled={isDeleting || !user}>
+                  <Button variant="destructive" className="w-full" disabled={isDeleting}>
                     {isDeleting ? <LoaderCircle className="animate-spin" /> : <Trash2 />}
                     Delete History
                   </Button>
@@ -325,16 +293,7 @@ function ChatPage() {
             <CardContent className="flex-1 overflow-hidden p-0">
               <ScrollArea className="h-full" viewportRef={viewportRef}>
                 <div className="p-6">
-                {!user && !loading && (
-                    <div className="flex h-full min-h-[50vh] flex-col items-center justify-center text-center">
-                      <h2 className="text-2xl font-semibold">Welcome to Mindful AI</h2>
-                      <p className="mt-2 text-muted-foreground">Please sign in to begin your conversation.</p>
-                      <Button onClick={signInWithGoogle} className="mt-6">
-                        Sign in with Google
-                      </Button>
-                    </div>
-                  )}
-                  {user && filteredMessages.map((message) => (
+                  {filteredMessages.map((message) => (
                     <div
                       key={message.id}
                       className={cn(
@@ -375,7 +334,6 @@ function ChatPage() {
                       </div>
                       {message.role === 'user' && (
                         <Avatar className="h-8 w-8">
-                           <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
                            <AvatarFallback>
                             <User className="h-5 w-5" />
                           </AvatarFallback>
@@ -395,7 +353,7 @@ function ChatPage() {
                       </div>
                     </div>
                   )}
-                  {user && filteredMessages.length === 0 && !isPending && (
+                  {filteredMessages.length === 0 && !isPending && (
                      <div className="text-center text-sm text-muted-foreground">
                         {searchQuery ? 'No messages found for your search.' : 'No messages yet. Start the conversation!'}
                     </div>
@@ -411,7 +369,7 @@ function ChatPage() {
                 <Textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder={user ? "How are you feeling today?" : "Please sign in to send a message."}
+                  placeholder={"How are you feeling today?"}
                   className="min-h-0 flex-1 resize-none"
                   rows={1}
                   onKeyDown={(e) => {
@@ -420,12 +378,12 @@ function ChatPage() {
                       handleSubmit(e as any);
                     }
                   }}
-                  disabled={isPending || !user}
+                  disabled={isPending}
                 />
                 <Button
                   type="submit"
                   size="icon"
-                  disabled={!input.trim() || isPending || !user}
+                  disabled={!input.trim() || isPending}
                   aria-label="Send Message"
                 >
                   <SendHorizonal className="h-5 w-5" />

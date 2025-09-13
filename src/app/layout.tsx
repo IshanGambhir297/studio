@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { PT_Sans } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/hooks/use-auth';
 
 export const metadata: Metadata = {
   title: {
@@ -28,9 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${ptSans.variable} font-body antialiased`}>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        {children}
         <Toaster />
       </body>
     </html>
