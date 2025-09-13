@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -50,6 +49,7 @@ const profileFormSchema = z.object({
   dob: z.date({
     required_error: 'A date of birth is required.',
   }),
+  phone: z.string().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -73,6 +73,7 @@ export default function ProfilePage() {
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       fullName: user?.displayName || '',
+      phone: '',
     },
   });
 
@@ -85,19 +86,25 @@ export default function ProfilePage() {
         form.setValue('fullName', user.displayName);
       }
 
-      // Fetch DOB from Firestore
+      // Fetch user data from Firestore
       const fetchUserData = async () => {
         const userDocRef = doc(db, 'users', user.uid);
         const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists() && userDoc.data().dob) {
-           try {
-            const dobDate = new Date(userDoc.data().dob);
-            if (!isNaN(dobDate.getTime())) {
-              form.setValue('dob', dobDate);
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            if (userData.dob) {
+                try {
+                    const dobDate = new Date(userData.dob);
+                    if (!isNaN(dobDate.getTime())) {
+                    form.setValue('dob', dobDate);
+                    }
+                } catch (e) {
+                    console.error("Error parsing date from firestore", e)
+                }
             }
-          } catch (e) {
-            console.error("Error parsing date from firestore", e)
-          }
+            if(userData.phone) {
+                form.setValue('phone', userData.phone);
+            }
         }
       };
       fetchUserData();
@@ -127,6 +134,9 @@ export default function ProfilePage() {
     formData.set('fullName', values.fullName);
     if(values.dob) {
       formData.set('dob', values.dob.toISOString());
+    }
+    if(values.phone) {
+        formData.set('phone', values.phone);
     }
     formAction(formData);
   };
@@ -197,6 +207,22 @@ export default function ProfilePage() {
                   </FormItem>
                 )}
               />
+               <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="(123) 456-7890" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                        Your phone number will not be shared.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </CardContent>
             <CardFooter className="flex justify-between">
               <Button variant="ghost" onClick={() => router.back()}>
@@ -210,4 +236,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

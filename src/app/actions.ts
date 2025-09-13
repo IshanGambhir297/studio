@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { analyzeUserSentiment } from '@/ai/flows/analyze-user-sentiment';
 import { generateSupportiveReply } from '@/ai/flows/generate-supportive-replies';
-import { referUserInDistress } from '@/ai/flows/refer-user-in-distress';
+import { referUserInDistress } from '@/ai-flows/refer-user-in-distress';
 import { db, auth } from '@/lib/firebase';
 import {
   collection,
@@ -115,6 +115,7 @@ const profileSchema = z.object({
   dob: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: 'Invalid date of birth.',
   }),
+  phone: z.string().optional(),
 });
 
 export async function updateUserProfileAction(prevState: any, formData: FormData) {
@@ -125,6 +126,7 @@ export async function updateUserProfileAction(prevState: any, formData: FormData
   const rawData = {
     fullName: formData.get('fullName'),
     dob: formData.get('dob'),
+    phone: formData.get('phone'),
   };
 
   const validatedFields = profileSchema.safeParse(rawData);
@@ -136,7 +138,7 @@ export async function updateUserProfileAction(prevState: any, formData: FormData
     };
   }
 
-  const { fullName, dob } = validatedFields.data;
+  const { fullName, dob, phone } = validatedFields.data;
 
   try {
     // Update Firebase Auth profile
@@ -148,6 +150,7 @@ export async function updateUserProfileAction(prevState: any, formData: FormData
     await setDoc(doc(db, 'users', auth.currentUser.uid), {
       fullName,
       dob,
+      phone,
     }, { merge: true });
 
     revalidatePath('/profile');
