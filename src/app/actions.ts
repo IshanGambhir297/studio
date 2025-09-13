@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { analyzeUserSentiment } from '@/ai/flows/analyze-user-sentiment';
 import { generateSupportiveReply } from '@/ai/flows/generate-supportive-replies';
-import { referUserInDistress } from '@/ai-flows/refer-user-in-distress';
+import { referUserInDistress } from '@/ai/flows/refer-user-in-distress';
 import { db, auth } from '@/lib/firebase';
 import {
   collection,
