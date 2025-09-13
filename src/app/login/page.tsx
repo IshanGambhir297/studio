@@ -91,7 +91,7 @@ export default function LoginPage() {
         <TabsContent value="email">
           <Card className="backdrop-blur-sm">
             <CardHeader>
-              <CardTitle>Welcome</CardTitle>
+              <CardTitle>Welcome!</CardTitle>
               <CardDescription>
                 First, <b>Sign Up</b> with the demo account details below. Then, you can use <b>Sign In</b>.
                 <br/>
