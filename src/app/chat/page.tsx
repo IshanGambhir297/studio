@@ -94,7 +94,7 @@ export default function ChatPage() {
         behavior: 'smooth',
       });
     }
-  }, [messages]);
+  }, [messages, isPending]);
 
   const handleSignOut = async () => {
     await signOut(auth);
@@ -103,7 +103,7 @@ export default function ChatPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!input.trim() || !user) return;
+    if (!input.trim() || !user || isPending) return;
     
     const userInput = input;
     setInput('');
@@ -135,9 +135,9 @@ export default function ChatPage() {
         <CardHeader className="flex flex-row items-center justify-between border-b">
           <div className="flex items-center gap-3">
             <Icons.Logo className="h-8 w-8 text-primary" />
-            <h1 className="text-xl font-bold tracking-tight">Mindful AI</h1>
+            <h1 className="font-headline text-xl font-bold tracking-tight">Mindful AI</h1>
           </div>
-          <Button variant="ghost" size="icon" onClick={handleSignOut}>
+          <Button variant="ghost" size="icon" onClick={handleSignOut} aria-label="Sign Out">
             <LogOut className="h-5 w-5" />
           </Button>
         </CardHeader>
@@ -161,17 +161,17 @@ export default function ChatPage() {
                   )}
                   <div
                     className={cn(
-                      'max-w-md rounded-2xl px-4 py-2',
+                      'max-w-[70%] rounded-2xl px-4 py-2',
                       message.role === 'user'
                         ? 'rounded-br-none bg-primary text-primary-foreground'
-                        : 'rounded-bl-none bg-muted text-muted-foreground'
+                        : 'rounded-bl-none bg-muted'
                     )}
                   >
                     <p className="text-sm">{message.content}</p>
                   </div>
                   {message.role === 'user' && (
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user?.photoURL ?? ''} />
+                      <AvatarImage src={user?.photoURL ?? ''} alt={user?.displayName ?? 'User'} />
                       <AvatarFallback>
                         <User className="h-5 w-5" />
                       </AvatarFallback>
@@ -180,14 +180,14 @@ export default function ChatPage() {
                 </div>
               ))}
               {isPending && (
-                <div className="mb-4 flex items-start gap-3 justify-start">
+                <div className="mb-4 flex items-start justify-start gap-3">
                    <Avatar className="h-8 w-8">
                       <AvatarFallback className="bg-accent">
                         <Bot className="h-5 w-5 text-accent-foreground" />
                       </AvatarFallback>
                     </Avatar>
-                  <div className="rounded-bl-none bg-muted text-muted-foreground max-w-md rounded-2xl px-4 py-2">
-                    <LoaderCircle className="h-5 w-5 animate-spin" />
+                  <div className="max-w-md rounded-2xl rounded-bl-none bg-muted px-4 py-2">
+                    <LoaderCircle className="h-5 w-5 animate-spin text-muted-foreground" />
                   </div>
                 </div>
               )}
@@ -213,7 +213,7 @@ export default function ChatPage() {
               }}
               disabled={isPending}
             />
-            <Button type="submit" size="icon" disabled={!input.trim() || isPending}>
+            <Button type="submit" size="icon" disabled={!input.trim() || isPending} aria-label="Send Message">
               <SendHorizonal className="h-5 w-5" />
             </Button>
           </form>

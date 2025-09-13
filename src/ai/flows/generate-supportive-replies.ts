@@ -35,12 +35,12 @@ const generateSupportiveReplyPrompt = ai.definePrompt({
   name: 'generateSupportiveReplyPrompt',
   input: {schema: GenerateSupportiveReplyInputSchema},
   output: {schema: GenerateSupportiveReplyOutputSchema},
-  prompt: `You are a mental health support chatbot. Generate a short, supportive reply (one or two sentences) to the user's message, given its sentiment.
+  prompt: `You are a mental health support chatbot. Your tone should be empathetic and understanding. Generate a short, supportive reply (one or two sentences) to the user's message, based on its sentiment.
 
 User Message: {{{userMessage}}}
 Sentiment: {{{sentiment}}}
 
-Only generate a reply if the sentiment is 'sad', 'anxious', or 'stressed'. For any other sentiment, return an empty string for the reply.
+Only generate a reply if the sentiment is 'sad', 'anxious', or 'stressed'. For any other sentiment (like 'happy' or 'neutral'), you must return an empty string for the reply. Never judge or dismiss the user's feelings.
 `,
 });
 
@@ -60,6 +60,9 @@ const generateSupportiveReplyFlow = ai.defineFlow(
     outputSchema: GenerateSupportiveReplyOutputSchema,
   },
   async input => {
+    if (!['sad', 'anxious', 'stressed'].includes(input.sentiment)) {
+      return { reply: '' };
+    }
     const {output} = await generateSupportiveReplyPrompt(input);
     return output!;
   }
