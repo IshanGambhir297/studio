@@ -46,7 +46,8 @@ export default function LoginPage() {
         await signInWithEmailAndPassword(auth, email, password);
         toast({ title: 'Success', description: 'Signed in successfully!' });
       }
-      router.push('/chat');
+      // The AuthGuard will handle the redirect
+      // router.push('/chat');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -63,7 +64,8 @@ export default function LoginPage() {
     try {
       await signInWithPopup(auth, googleProvider);
       toast({ title: 'Success', description: 'Signed in with Google!' });
-      router.push('/chat');
+      // The AuthGuard will handle the redirect
+      // router.push('/chat');
     } catch (error: any) {
       toast({
         variant: 'destructive',

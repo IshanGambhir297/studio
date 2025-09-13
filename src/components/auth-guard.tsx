@@ -19,19 +19,18 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     }
 
     const pathIsProtected = protectedPaths.some(p => pathname.startsWith(p));
-    const pathIsPublic = publicPaths.includes(pathname);
 
     if (!user && pathIsProtected) {
       // If not logged in and trying to access a protected page, redirect to login
       router.replace('/login');
-    } else if (user && (pathname === '/login')) {
-      // If logged in and on the login page, redirect to chat
+    } else if (user && (pathname === '/login' || pathname === '/')) {
+      // If logged in and on a public page (login or landing), redirect to chat
       router.replace('/chat');
     }
   }, [user, loading, router, pathname]);
   
   // Show a loading spinner while auth state is being determined or during redirects.
-  if (loading || (!user && protectedPaths.some(p => pathname.startsWith(p))) || (user && pathname === '/login')) {
+  if (loading || (!user && protectedPaths.some(p => pathname.startsWith(p))) || (user && (pathname === '/login' || pathname === '/'))) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
