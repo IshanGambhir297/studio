@@ -85,7 +85,7 @@ export default function LoginPage() {
       </div>
       <Tabs defaultValue="email" className="w-full max-w-sm">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="email">Email</TabsTrigger>
+          <TabsTrigger value="email">E-mail</TabsTrigger>
           <TabsTrigger value="google">Google</TabsTrigger>
         </TabsList>
         <TabsContent value="email">
@@ -95,12 +95,12 @@ export default function LoginPage() {
               <CardDescription>
                 First, <b>Sign Up</b> with the demo account details below. Then, you can use <b>Sign In</b>.
                 <br/>
-                <b>Email:</b> demo@example.com | <b>Password:</b> 123456
+                <b>E-mail:</b> demo@example.com | <b>Password:</b> 123456
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">E-mail</Label>
                 <Input
                   id="email"
                   type="email"
