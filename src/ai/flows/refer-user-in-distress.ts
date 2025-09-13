@@ -49,6 +49,7 @@ const prompt = ai.definePrompt({
   }
   `,
   config: {
+    model: 'googleai/gemini-2.5-flash',
     safetySettings: [
       {
         category: 'HARM_CATEGORY_DANGEROUS_CONTENT',

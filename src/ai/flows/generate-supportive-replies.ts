@@ -42,6 +42,9 @@ Sentiment: {{{sentiment}}}
 
 Only generate a reply if the sentiment is 'sad', 'anxious', or 'stressed'. For any other sentiment (like 'happy' or 'neutral'), you must return an empty string for the reply. Never judge or dismiss the user's feelings.
 `,
+  config: {
+    model: 'googleai/gemini-2.5-flash',
+  },
 });
 
 /**
