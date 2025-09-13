@@ -35,7 +35,7 @@ const prompt = ai.definePrompt({
   name: 'analyzeUserSentimentPrompt',
   input: {schema: AnalyzeUserSentimentInputSchema},
   output: {schema: AnalyzeUserSentimentOutputSchema},
-  prompt: `You are a mental health assistant. Analyze the sentiment of the following user message.  The possible sentiments are: happy, sad, anxious, stressed, neutral.  If the user expresses thoughts of self-harm or suicide, or any other indication of severe distress, set the sentiment to \"severe_distress\" and isDistress to true.
+  prompt: `You are a mental health assistant. Analyze the sentiment of the following user message.  The possible sentiments are: happy, sad, anxious, stressed, neutral.  If the user expresses thoughts of self-harm or suicide, or any other indication of severe distress, set the sentiment to "severe_distress" and isDistress to true.
 
 Message: {{{message}}}`, config: {
     safetySettings: [
