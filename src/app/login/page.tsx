@@ -105,8 +105,8 @@ export default function LoginPage() {
               : 'Create an account to get started.'}
             <br />
             For demo, sign up with{' '}
-            <span className="font-semibold">demo@example.com</span> /{' '}
-            <span className="font-semibold">123456</span>.
+            <span className="font-semibold">abcxyz@email.com</span> /{' '}
+            <span className="font-semibold">adminstartor</span>.
           </CardDescription>
         </CardHeader>
         <CardContent>
