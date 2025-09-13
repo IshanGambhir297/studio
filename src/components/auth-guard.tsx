@@ -5,7 +5,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { LoaderCircle } from 'lucide-react';
 
-const publicPaths = ['/'];
 const protectedPaths = ['/chat'];
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
@@ -13,52 +12,27 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const isPublic = publicPaths.includes(pathname);
-  const isProtected = protectedPaths.includes(pathname);
-  const isLoginPage = pathname === '/login';
-
   useEffect(() => {
     if (loading) {
-      // While loading, don't do any redirects.
-      // The loading screen from the provider or this guard will be shown.
-      return;
+      return; // Do nothing while loading
     }
 
-    // If we have a user
-    if (user) {
-      // and they are on the login page, redirect them to chat.
-      if (isLoginPage) {
-        router.replace('/chat');
-      }
-    } else { // If we don't have a user
-      // and they are trying to access a protected page, redirect to login.
-      if (isProtected) {
-        router.replace('/login');
-      }
+    const pathIsProtected = protectedPaths.includes(pathname);
+    const pathIsLogin = pathname === '/login';
+
+    if (!user && pathIsProtected) {
+      // If not logged in and trying to access a protected page, redirect to login
+      router.replace('/login');
+    } else if (user && pathIsLogin) {
+      // If logged in and on the login page, redirect to chat
+      router.replace('/chat');
     }
-  }, [user, loading, router, pathname, isPublic, isProtected, isLoginPage]);
+  }, [user, loading, router, pathname]);
   
-  // Show a loading spinner while auth state is being determined.
-  if (loading) {
+  // Show a loading spinner while auth state is being determined or during redirects.
+  if (loading || (!user && protectedPaths.includes(pathname)) || (user && pathname === '/login')) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
-        <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // Prevent rendering of pages during redirection to avoid content flashing.
-  if (!user && isProtected) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (user && isLoginPage) {
-     return (
-       <div className="flex h-screen w-full items-center justify-center bg-background">
         <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
       </div>
     );

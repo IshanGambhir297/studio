@@ -28,6 +28,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -54,7 +55,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true);
+    setIsGoogleLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
       toast({ title: 'Success', description: 'Signed in with Google!' });
@@ -66,7 +67,7 @@ export default function LoginPage() {
         description: error.message,
       });
     } finally {
-      setIsLoading(false);
+      setIsGoogleLoading(false);
     }
   };
 
@@ -98,7 +99,7 @@ export default function LoginPage() {
                   placeholder="m@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading}
+                  disabled={isLoading || isGoogleLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -108,7 +109,7 @@ export default function LoginPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
+                  disabled={isLoading || isGoogleLoading}
                 />
               </div>
             </CardContent>
@@ -116,7 +117,7 @@ export default function LoginPage() {
               <Button
                 className="w-full"
                 onClick={() => handleAuthAction('signIn')}
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading}
               >
                 {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                 Sign In
@@ -125,7 +126,7 @@ export default function LoginPage() {
                 variant="outline"
                 className="w-full"
                 onClick={() => handleAuthAction('signUp')}
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading}
               >
                  {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                 Sign Up
@@ -145,9 +146,9 @@ export default function LoginPage() {
               <Button
                 className="w-full"
                 onClick={handleGoogleSignIn}
-                disabled={isLoading}
+                disabled={isGoogleLoading || isLoading}
               >
-                {isLoading ? (
+                {isGoogleLoading ? (
                   <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <svg
