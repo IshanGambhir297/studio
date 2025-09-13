@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -23,15 +23,23 @@ import { useToast } from '@/hooks/use-toast';
 import { Icons } from '@/components/icons';
 import { Eye, EyeOff, LoaderCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/auth-context';
 
 export default function LoginPage() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { toast } = useToast();
-  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace('/chat');
+    }
+  }, [user, authLoading, router]);
 
   const handleAuthAction = async (action: 'signIn' | 'signUp') => {
     setIsLoading(true);
@@ -42,9 +50,12 @@ export default function LoginPage() {
           title: 'Success',
           description: 'Account created successfully! You can now sign in.',
         });
+        // Clear fields after sign-up to encourage sign-in
+        setEmail('');
+        setPassword('');
       } else {
         await signInWithEmailAndPassword(auth, email, password);
-        // Let the AuthGuard handle the redirect
+        // The useEffect hook will handle the redirect
       }
     } catch (error: any) {
       toast({
@@ -61,7 +72,7 @@ export default function LoginPage() {
     setIsGoogleLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
-      // Let the AuthGuard handle the redirect
+      // The useEffect hook will handle the redirect
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -72,6 +83,14 @@ export default function LoginPage() {
       setIsGoogleLoading(false);
     }
   };
+
+  if (authLoading || (!authLoading && user)) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-transparent p-4">
@@ -136,17 +155,7 @@ export default function LoginPage() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
-              <Button
-                className="w-full"
-                onClick={() => handleAuthAction('signIn')}
-                disabled={isLoading || isGoogleLoading}
-              >
-                {isLoading && (
-                  <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Sign In
-              </Button>
-              <Button
+               <Button
                 variant="outline"
                 className="w-full"
                 onClick={() => handleAuthAction('signUp')}
@@ -156,6 +165,16 @@ export default function LoginPage() {
                   <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 Sign Up
+              </Button>
+              <Button
+                className="w-full"
+                onClick={() => handleAuthAction('signIn')}
+                disabled={isLoading || isGoogleLoading}
+              >
+                {isLoading && (
+                  <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Sign In
               </Button>
             </CardFooter>
           </Card>

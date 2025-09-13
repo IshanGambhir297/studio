@@ -6,32 +6,28 @@ import { useEffect } from 'react';
 import { LoaderCircle } from 'lucide-react';
 
 const protectedPaths = ['/chat', '/profile'];
-const publicPaths = ['/login', '/'];
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
+  const pathIsProtected = protectedPaths.some(p => pathname.startsWith(p));
+
   useEffect(() => {
     if (loading) {
       return; // Do nothing while loading
     }
 
-    const pathIsProtected = protectedPaths.some(p => pathname.startsWith(p));
-    const pathIsPublic = publicPaths.includes(pathname);
-
     if (!user && pathIsProtected) {
       // If not logged in and trying to access a protected page, redirect to login
       router.replace('/login');
-    } else if (user && pathIsPublic) {
-      // If logged in and on a public page (login or landing), redirect to chat
-      router.replace('/chat');
     }
-  }, [user, loading, router, pathname]);
+  }, [user, loading, router, pathname, pathIsProtected]);
   
-  // Show a loading spinner while auth state is being determined or during redirects.
-  if (loading || (!user && protectedPaths.some(p => pathname.startsWith(p))) || (user && publicPaths.includes(pathname))) {
+  // Show a loading spinner while auth state is being determined
+  // or if we are waiting for the redirect to happen.
+  if (loading || (!user && pathIsProtected)) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
@@ -39,5 +35,6 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
   
+  // if the user is authenticated or the path is not protected, render the children
   return <>{children}</>;
 }

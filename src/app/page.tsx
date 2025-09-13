@@ -1,50 +1,32 @@
 
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
-import { Icons } from '@/components/icons';
+'use client';
 
+import { useAuth } from '@/contexts/auth-context';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { LoaderCircle } from 'lucide-react';
+
+// This page now acts as a router.
+// If the user is logged in, it will redirect to /chat.
+// If the user is not logged in, it will redirect to /login.
 export default function Home() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading) {
+      if (user) {
+        router.replace('/chat');
+      } else {
+        router.replace('/login');
+      }
+    }
+  }, [user, loading, router]);
+
+  // Show a loading spinner while we determine the auth state
   return (
-    <div className="flex min-h-screen flex-col bg-gray-900 text-white">
-      <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-gray-900/80 backdrop-blur">
-        <div className="container flex h-14 items-center">
-          <div className="mr-4 flex items-center">
-            <Icons.Logo className="mr-2 h-6 w-6 text-primary" />
-            <span className="font-bold text-white">MentalCare</span>
-          </div>
-          <div className="flex flex-1 items-center justify-end space-x-2">
-            <nav className="flex items-center">
-              <Button asChild>
-                <Link href="/chat">
-                  Get Started
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </nav>
-          </div>
-        </div>
-      </header>
-      <main className="flex-1">
-        <div className="container relative flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center">
-          <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
-              Your Personal AI Mental Health Assistant
-            </h1>
-            <p className="mt-6 text-lg text-gray-400">
-              MentalCare is here to listen. Engage in a conversation with an empathetic AI that understands your feelings and offers supportive words when you need them most.
-            </p>
-            <div className="mt-10">
-              <Button size="lg" asChild>
-                <Link href="/chat">
-                  Start Your First Conversation
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </main>
+    <div className="flex h-screen w-full items-center justify-center bg-background">
+      <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
     </div>
   );
 }
