@@ -50,12 +50,12 @@ type Message = {
 };
 
 const sentimentColors: { [key: string]: string } = {
-  happy: 'bg-green-200 text-green-800',
-  sad: 'bg-blue-200 text-blue-800',
-  anxious: 'bg-yellow-200 text-yellow-800',
-  stressed: 'bg-orange-200 text-orange-800',
-  neutral: 'bg-gray-200 text-gray-800',
-  severe_distress: 'bg-red-200 text-red-800',
+  happy: 'bg-green-200 text-green-800 border-green-300',
+  sad: 'bg-blue-200 text-blue-800 border-blue-300',
+  anxious: 'bg-yellow-200 text-yellow-800 border-yellow-300',
+  stressed: 'bg-orange-200 text-orange-800 border-orange-300',
+  neutral: 'bg-gray-200 text-gray-800 border-gray-300',
+  severe_distress: 'bg-red-200 text-red-800 border-red-300',
 };
 
 export default function ChatPage() {
@@ -67,6 +67,7 @@ export default function ChatPage() {
   const [isPending, startTransition] = useTransition();
   const [referralInfo, setReferralInfo] = useState({ open: false, message: '' });
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (user) {
@@ -102,9 +103,9 @@ export default function ChatPage() {
   }, [user]);
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTo({
-        top: scrollAreaRef.current.scrollHeight,
+    if (viewportRef.current) {
+      viewportRef.current.scrollTo({
+        top: viewportRef.current.scrollHeight,
         behavior: 'smooth',
       });
     }
@@ -156,7 +157,7 @@ export default function ChatPage() {
           </Button>
         </CardHeader>
         <CardContent className="flex-1 overflow-hidden p-0">
-          <ScrollArea className="h-full" ref={scrollAreaRef}>
+          <ScrollArea className="h-full" viewportRef={viewportRef}>
             <div className="p-6">
               {messages.map((message) => (
                 <div
@@ -175,24 +176,18 @@ export default function ChatPage() {
                   )}
                    <div
                     className={cn(
-                      'flex flex-col gap-1',
-                      message.role === 'user' ? 'items-end' : 'items-start'
+                      'flex flex-col max-w-md gap-2',
+                       message.role === 'user'
+                          ? 'rounded-br-none bg-primary text-primary-foreground'
+                          : 'rounded-bl-none bg-muted',
+                      'rounded-2xl px-4 py-2'
                     )}
                   >
-                    <div
-                      className={cn(
-                        'max-w-max rounded-2xl px-4 py-2',
-                        message.role === 'user'
-                          ? 'rounded-br-none bg-primary text-primary-foreground'
-                          : 'rounded-bl-none bg-muted'
-                      )}
-                    >
-                      <p className="text-sm">{message.content}</p>
-                    </div>
-                    {message.role === 'user' && message.sentiment && (
+                    <p className="text-sm">{message.content}</p>
+                     {message.role === 'user' && message.sentiment && (
                       <Badge
                         variant="outline"
-                        className={cn('capitalize', sentimentColors[message.sentiment] || 'bg-gray-200 text-gray-800')}
+                        className={cn('w-min capitalize', sentimentColors[message.sentiment] || 'bg-gray-200 text-gray-800')}
                       >
                         {message.sentiment.replace(/_/g, ' ')}
                       </Badge>
@@ -266,3 +261,5 @@ export default function ChatPage() {
     </div>
   );
 }
+
+    
