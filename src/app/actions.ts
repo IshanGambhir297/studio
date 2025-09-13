@@ -2,13 +2,6 @@
 'use server';
 
 import { z } from 'zod';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut as firebaseSignOut,
-} from 'firebase/auth';
-import { auth, googleProvider } from '@/lib/firebase';
 import { analyzeUserSentiment } from '@/ai/flows/analyze-user-sentiment';
 import { generateSupportiveReply } from '@/ai/flows/generate-supportive-replies';
 import { referUserInDistress } from '@/ai/flows/refer-user-in-distress';
@@ -23,81 +16,16 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 
-const emailSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
-
-export async function signUpWithEmail(formData: FormData) {
-  const validatedFields = emailSchema.safeParse(
-    Object.fromEntries(formData.entries())
-  );
-
-  if (!validatedFields.success) {
-    return { error: 'Invalid email or password.' };
-  }
-  const { email, password } = validatedFields.data;
-
-  try {
-    await createUserWithEmailAndPassword(auth, email, password);
-  } catch (error: any) {
-    return { error: error.message };
-  }
-
-  redirect('/');
-}
-
-export async function signInWithEmail(formData: FormData) {
-  const validatedFields = emailSchema.safeParse(
-    Object.fromEntries(formData.entries())
-  );
-
-  if (!validatedFields.success) {
-    return { error: 'Invalid email or password.' };
-  }
-  const { email, password } = validatedFields.data;
-
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch (error: any) {
-    return { error: error.message };
-  }
-
-  redirect('/');
-}
-
-export async function signInWithGoogle() {
-  try {
-    await signInWithPopup(auth, googleProvider);
-  } catch (error: any) {
-    if (error.code === 'auth/popup-closed-by-user') {
-      return;
-    }
-    return { error: error.message };
-  }
-  redirect('/');
-}
-
-export async function signOut() {
-  try {
-    await firebaseSignOut(auth);
-  } catch (error: any) {
-    return { error: error.message };
-  }
-  redirect('/login');
-}
+const GUEST_USER_ID = 'guest_user';
 
 const sendMessageSchema = z.object({
   message: z.string().min(1),
-  userId: z.string().min(1),
 });
 
 export async function sendMessageAction(formData: FormData) {
   const rawData = {
     message: formData.get('message'),
-    userId: formData.get('userId'),
   };
 
   const validatedFields = sendMessageSchema.safeParse(rawData);
@@ -108,7 +36,7 @@ export async function sendMessageAction(formData: FormData) {
     };
   }
 
-  const { message, userId } = validatedFields.data;
+  const { message } = validatedFields.data;
 
   try {
     const sentimentResult = await analyzeUserSentiment({ message });
@@ -128,7 +56,7 @@ export async function sendMessageAction(formData: FormData) {
     const aiMessage = replyResult.reply;
 
     await addDoc(collection(db, 'conversations'), {
-      userId,
+      userId: GUEST_USER_ID,
       userMessage: message,
       aiMessage,
       sentiment: sentimentResult.sentiment,
@@ -149,14 +77,9 @@ export async function sendMessageAction(formData: FormData) {
   }
 }
 
-export async function deleteHistoryAction(formData: FormData) {
-  const userId = formData.get('userId');
-  if (!userId || typeof userId !== 'string') {
-    return { error: 'Invalid user.' };
-  }
-
+export async function deleteHistoryAction() {
   try {
-    const q = query(collection(db, 'conversations'), where('userId', '==', userId));
+    const q = query(collection(db, 'conversations'), where('userId', '==', GUEST_USER_ID));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {

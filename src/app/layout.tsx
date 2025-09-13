@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/contexts/auth-context';
 
 export const metadata: Metadata = {
   title: {
-    default: 'MentalCare - Your AI Mental Health Assistant',
-    template: '%s | MentalCare',
+    default: 'Mindful AI - Your AI Mental Health Assistant',
+    template: '%s | Mindful AI',
   },
   description:
     'An AI-powered chat application to support your mental wellness journey.',
@@ -32,10 +31,8 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <AuthProvider>
-          {children}
-          <Toaster />
-        </AuthProvider>
+        {children}
+        <Toaster />
       </body>
     </html>
   );
