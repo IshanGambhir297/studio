@@ -53,7 +53,8 @@ You must perform three tasks:
 2.  **Detect Distress**: Based on the sentiment analysis, if the sentiment is "severe_distress", set the "isDistress" output field to true. Otherwise, set it to false.
 3.  **Generate Reply**:
     *   If the sentiment is 'sad', 'anxious', or 'stressed', generate a short, supportive reply (one or two sentences).
-    *   If the sentiment is 'happy', 'neutral', or 'severe_distress', return an empty string for the 'aiMessage'. For severe distress, a separate mechanism will provide a helpline, so do not generate a message here.
+    *   If the sentiment is 'happy' or 'neutral', generate a brief, positive affirmation (e.g., "That's wonderful to hear!").
+    *   If the sentiment is 'severe_distress', return an empty string for the 'aiMessage'. For severe distress, a separate mechanism will provide a helpline, so do not generate a message here.
 
 Never judge or dismiss the user's feelings.
 
