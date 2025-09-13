@@ -1,9 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { analyzeUserSentiment } from '@/ai/flows/analyze-user-sentiment';
-import { generateSupportiveReply } from '@/ai/flows/generate-supportive-replies';
-import { referUserInDistress } from '@/ai/flows/refer-user-in-distress';
+import { processUserMessage } from '@/ai/flows/process-user-message';
 import { db } from '@/lib/firebase';
 import {
   collection,
@@ -38,27 +36,18 @@ export async function sendMessageAction(formData: FormData) {
   const { message } = validatedFields.data;
 
   try {
-    const sentimentResult = await analyzeUserSentiment({ message });
+    const { sentiment, isDistress, aiMessage } = await processUserMessage({ message });
 
     let referralMessage = '';
-    if (sentimentResult.isDistress) {
-      const referralResult = await referUserInDistress({ message });
-      if (referralResult.shouldRefer) {
-        referralMessage = "⚠️ Please reach out to a professional. Helpline: +91-9876543210";
-      }
+    if (isDistress) {
+      referralMessage = "⚠️ Please reach out to a professional. Helpline: +91-9876543210";
     }
-
-    const replyResult = await generateSupportiveReply({
-      sentiment: sentimentResult.sentiment,
-      userMessage: message,
-    });
-    const aiMessage = replyResult.reply;
 
     await addDoc(collection(db, 'conversations'), {
       userId: GUEST_USER_ID,
       userMessage: message,
       aiMessage,
-      sentiment: sentimentResult.sentiment,
+      sentiment,
       timestamp: Timestamp.now(),
     });
 
