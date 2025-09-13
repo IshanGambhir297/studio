@@ -1,4 +1,3 @@
-
 'use server';
 
 import { z } from 'zod';
@@ -45,7 +44,7 @@ export async function sendMessageAction(formData: FormData) {
     if (sentimentResult.isDistress) {
       const referralResult = await referUserInDistress({ message });
       if (referralResult.shouldRefer) {
-        referralMessage = referralResult.referralMessage;
+        referralMessage = "⚠️ Please reach out to a professional. Helpline: +91-9876543210";
       }
     }
 
