@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { analyzeUserSentiment } from '@/ai/flows/analyze-user-sentiment';
 import { generateSupportiveReply } from '@/ai/flows/generate-supportive-replies';
 import { referUserInDistress } from '@/ai/flows/refer-user-in-distress';
-import { db, auth } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import {
   collection,
   addDoc,
@@ -13,11 +13,8 @@ import {
   where,
   getDocs,
   writeBatch,
-  doc,
-  setDoc,
 } from 'firebase/firestore';
 import { revalidatePath } from 'next/cache';
-import { updateProfile } from 'firebase/auth';
 
 const sendMessageSchema = z.object({
   message: z.string().min(1),
@@ -106,63 +103,6 @@ export async function deleteHistoryAction(formData: FormData) {
     console.error('Error deleting history:', error);
     return {
       error: 'An error occurred while deleting your history.',
-    };
-  }
-}
-
-const profileSchema = z.object({
-  fullName: z.string().min(1, 'Full name is required.'),
-  dob: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: 'Invalid date of birth.',
-  }),
-  phone: z.string().optional(),
-});
-
-export async function updateUserProfileAction(prevState: any, formData: FormData) {
-  if (!auth.currentUser) {
-    return { error: 'You must be logged in to update your profile.' };
-  }
-
-  const rawData = {
-    fullName: formData.get('fullName'),
-    dob: formData.get('dob'),
-    phone: formData.get('phone'),
-  };
-
-  const validatedFields = profileSchema.safeParse(rawData);
-
-  if (!validatedFields.success) {
-    return {
-      error: 'Invalid input.',
-      fieldErrors: validatedFields.error.flatten().fieldErrors,
-    };
-  }
-
-  const { fullName, dob, phone } = validatedFields.data;
-
-  try {
-    // Update Firebase Auth profile
-    await updateProfile(auth.currentUser, {
-      displayName: fullName,
-    });
-
-    // Update Firestore user document
-    await setDoc(doc(db, 'users', auth.currentUser.uid), {
-      fullName,
-      dob,
-      phone,
-    }, { merge: true });
-
-    revalidatePath('/profile');
-    revalidatePath('/chat');
-
-    return {
-      success: 'Profile updated successfully!',
-    };
-  } catch (error) {
-    console.error('Error updating profile:', error);
-    return {
-      error: 'An error occurred while updating your profile.',
     };
   }
 }

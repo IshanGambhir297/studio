@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition, useMemo } from 'react';
-import { useAuth } from '@/contexts/auth-context';
 import { db } from '@/lib/firebase';
 import {
   collection,
@@ -13,9 +12,8 @@ import {
 } from 'firebase/firestore';
 import { sendMessageAction, deleteHistoryAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import Link from 'next/link';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -45,29 +43,16 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
   Bot,
   LoaderCircle,
-  LogOut,
   SendHorizonal,
   User,
   PanelLeft,
   Search,
   Trash2,
-  Settings,
 } from 'lucide-react';
 import { Icons } from '@/components/icons';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 
@@ -88,10 +73,11 @@ const sentimentColors: { [key: string]: string } = {
   severe_distress: 'bg-red-200 text-red-800 border-red-300',
 };
 
+// Static user ID since there is no authentication
+const STATIC_USER_ID = 'static-user-for-demo';
+
 export default function ChatPage() {
-  const { user } = useAuth();
   const { toast } = useToast();
-  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -102,37 +88,35 @@ export default function ChatPage() {
   const [isSheetOpen, setSheetOpen] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      const q = query(
-        collection(db, 'conversations'),
-        where('userId', '==', user.uid),
-        orderBy('timestamp', 'asc')
-      );
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const newMessages: Message[] = [];
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          newMessages.push({
-            id: doc.id + '-user',
-            role: 'user',
-            content: data.userMessage,
-            timestamp: data.timestamp,
-            sentiment: data.sentiment,
-          });
-          if (data.aiMessage) {
-            newMessages.push({
-              id: doc.id + '-ai',
-              role: 'assistant',
-              content: data.aiMessage,
-              timestamp: data.timestamp,
-            });
-          }
+    const q = query(
+      collection(db, 'conversations'),
+      where('userId', '==', STATIC_USER_ID),
+      orderBy('timestamp', 'asc')
+    );
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const newMessages: Message[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        newMessages.push({
+          id: doc.id + '-user',
+          role: 'user',
+          content: data.userMessage,
+          timestamp: data.timestamp,
+          sentiment: data.sentiment,
         });
-        setMessages(newMessages);
+        if (data.aiMessage) {
+          newMessages.push({
+            id: doc.id + '-ai',
+            role: 'assistant',
+            content: data.aiMessage,
+            timestamp: data.timestamp,
+          });
+        }
       });
-      return () => unsubscribe();
-    }
-  }, [user]);
+      setMessages(newMessages);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (viewportRef.current) {
@@ -143,14 +127,9 @@ export default function ChatPage() {
     }
   }, [messages, isPending]);
 
-  const handleSignOut = async () => {
-    await signOut(auth);
-    router.push('/login');
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!input.trim() || !user || isPending) return;
+    if (!input.trim() || isPending) return;
 
     const userInput = input;
     setInput('');
@@ -158,7 +137,7 @@ export default function ChatPage() {
     startTransition(async () => {
       const formData = new FormData();
       formData.append('message', userInput);
-      formData.append('userId', user.uid);
+      formData.append('userId', STATIC_USER_ID);
 
       const result = await sendMessageAction(formData);
 
@@ -177,10 +156,9 @@ export default function ChatPage() {
   };
   
   const handleDeleteHistory = async () => {
-    if (!user) return;
     startDeleteTransition(async () => {
       const formData = new FormData();
-      formData.append('userId', user.uid);
+      formData.append('userId', STATIC_USER_ID);
       const result = await deleteHistoryAction(formData);
       if (result.error) {
         toast({
@@ -262,35 +240,6 @@ export default function ChatPage() {
               MentalCare
             </h1>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-               <Button variant="ghost" size="icon">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage
-                    src={user?.photoURL ?? ''}
-                    alt={user?.displayName ?? 'User'}
-                  />
-                  <AvatarFallback>
-                    <User className="h-5 w-5" />
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{user?.displayName || 'My Account'}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/profile">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleSignOut}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Sign Out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </CardHeader>
         <div className="flex flex-1 overflow-hidden">
           <div className="hidden w-80 flex-col border-r bg-background/50 p-4 md:flex">
@@ -372,11 +321,7 @@ export default function ChatPage() {
                       </div>
                       {message.role === 'user' && (
                         <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={user?.photoURL ?? ''}
-                            alt={user?.displayName ?? 'User'}
-                          />
-                          <AvatarFallback>
+                           <AvatarFallback>
                             <User className="h-5 w-5" />
                           </AvatarFallback>
                         </Avatar>
