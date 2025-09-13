@@ -194,7 +194,7 @@ export default function ChatPage() {
   }, [messages, searchQuery]);
 
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center p-4">
+    <div className="flex h-screen w-full flex-col items-center justify-center bg-transparent p-4">
       <Card className="flex h-full w-full max-w-4xl flex-col shadow-2xl backdrop-blur-sm">
         <CardHeader className="flex flex-row items-center justify-between border-b">
           <div className="flex items-center gap-3">
@@ -328,9 +328,9 @@ export default function ChatPage() {
                           <Badge
                             variant="outline"
                             className={cn(
-                              'w-min self-start capitalize',
+                              'w-min self-start border capitalize',
                               sentimentColors[message.sentiment] ||
-                                'bg-gray-200 text-gray-800'
+                                'border-gray-300 bg-gray-200 text-gray-800'
                             )}
                           >
                             {message.sentiment.replace(/_/g, ' ')}
@@ -425,3 +425,5 @@ export default function ChatPage() {
     </div>
   );
 }
+
+    

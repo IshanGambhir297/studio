@@ -75,7 +75,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-transparent p-4">
       <div className="mb-8 flex items-center gap-2">
         <Icons.Logo className="h-8 w-8 text-primary" />
         <h1 className="text-3xl font-bold tracking-tight text-white">
@@ -185,3 +185,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
