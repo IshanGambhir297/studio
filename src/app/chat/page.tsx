@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { sendMessageAction, deleteHistoryAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -44,6 +45,14 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
   Bot,
   LoaderCircle,
   LogOut,
@@ -52,6 +61,7 @@ import {
   PanelLeft,
   Search,
   Trash2,
+  Settings,
 } from 'lucide-react';
 import { Icons } from '@/components/icons';
 import { signOut } from 'firebase/auth';
@@ -89,6 +99,7 @@ export default function ChatPage() {
   const [isDeleting, startDeleteTransition] = useTransition();
   const [referralInfo, setReferralInfo] = useState({ open: false, message: '' });
   const viewportRef = useRef<HTMLDivElement>(null);
+  const [isSheetOpen, setSheetOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -182,6 +193,7 @@ export default function ChatPage() {
           title: 'Success',
           description: 'Your conversation history has been deleted.',
         });
+        setSheetOpen(false);
       }
     });
   };
@@ -198,7 +210,7 @@ export default function ChatPage() {
       <Card className="flex h-full w-full max-w-4xl flex-col shadow-2xl backdrop-blur-sm">
         <CardHeader className="flex flex-row items-center justify-between border-b">
           <div className="flex items-center gap-3">
-             <Sheet>
+             <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="md:hidden">
                   <PanelLeft className="h-5 w-5" />
@@ -250,14 +262,35 @@ export default function ChatPage() {
               MentalCare
             </h1>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleSignOut}
-            aria-label="Sign Out"
-          >
-            <LogOut className="h-5 w-5" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+               <Button variant="ghost" size="icon">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={user?.photoURL ?? ''}
+                    alt={user?.displayName ?? 'User'}
+                  />
+                  <AvatarFallback>
+                    <User className="h-5 w-5" />
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>{user?.displayName || 'My Account'}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/profile">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleSignOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sign Out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </CardHeader>
         <div className="flex flex-1 overflow-hidden">
           <div className="hidden w-80 flex-col border-r bg-background/50 p-4 md:flex">
