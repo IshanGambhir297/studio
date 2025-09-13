@@ -37,7 +37,10 @@ export default function LoginPage() {
     try {
       if (action === 'signUp') {
         await createUserWithEmailAndPassword(auth, email, password);
-        toast({ title: 'Success', description: 'Account created successfully!' });
+        toast({
+          title: 'Success',
+          description: 'Account created successfully!',
+        });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         toast({ title: 'Success', description: 'Signed in successfully!' });
@@ -75,7 +78,9 @@ export default function LoginPage() {
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="mb-8 flex items-center gap-2">
         <Icons.Logo className="h-8 w-8 text-primary" />
-        <h1 className="text-3xl font-bold tracking-tight text-white">MentalCare</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-white">
+          MentalCare
+        </h1>
       </div>
       <Tabs defaultValue="email" className="w-full max-w-sm">
         <TabsList className="grid w-full grid-cols-2">
@@ -119,7 +124,9 @@ export default function LoginPage() {
                 onClick={() => handleAuthAction('signIn')}
                 disabled={isLoading || isGoogleLoading}
               >
-                {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                {isLoading && (
+                  <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Sign In
               </Button>
               <Button
@@ -128,7 +135,9 @@ export default function LoginPage() {
                 onClick={() => handleAuthAction('signUp')}
                 disabled={isLoading || isGoogleLoading}
               >
-                 {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                {isLoading && (
+                  <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Sign Up
               </Button>
             </CardFooter>

@@ -9,7 +9,8 @@ export const metadata: Metadata = {
     default: 'MentalCare - Your AI Mental Health Assistant',
     template: '%s | MentalCare',
   },
-  description: 'An AI-powered chat application to support your mental wellness journey.',
+  description:
+    'An AI-powered chat application to support your mental wellness journey.',
 };
 
 export default function RootLayout({
@@ -21,7 +22,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <link
           href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
           rel="stylesheet"
