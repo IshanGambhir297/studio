@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition, useMemo } from 'react';
-import { db } from '@/lib/firebase';
+import { app, db } from '@/lib/firebase';
 import {
   collection,
   query,
@@ -86,6 +86,9 @@ function ChatPage() {
   const [isSheetOpen, setSheetOpen] = useState(false);
 
   useEffect(() => {
+    console.log("API Key:", process.env.GEMINI_API_KEY);
+    console.log("Firebase Config:", app.options);
+    
     const q = query(
       collection(db, 'conversations'),
       where('userId', '==', 'guest_user'),
@@ -112,9 +115,16 @@ function ChatPage() {
         }
       });
       setMessages(newMessages);
+    }, (error) => {
+      console.error("Error fetching conversations: ", error);
+      toast({
+        variant: 'destructive',
+        title: 'Database Error',
+        description: 'Could not connect to the database. Please check the console for details.',
+      });
     });
     return () => unsubscribe();
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     if (viewportRef.current) {
@@ -400,3 +410,5 @@ function ChatPage() {
 }
 
 export default ChatPage;
+
+    
