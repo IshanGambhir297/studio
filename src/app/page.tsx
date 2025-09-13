@@ -6,12 +6,12 @@ import { Icons } from '@/components/icons';
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="flex min-h-screen flex-col bg-gray-900 text-white">
+      <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-gray-900/80 backdrop-blur">
         <div className="container flex h-14 items-center">
           <div className="mr-4 flex items-center">
-            <Icons.Logo className="mr-2 h-6 w-6" />
-            <span className="font-bold">MentalCare</span>
+            <Icons.Logo className="mr-2 h-6 w-6 text-primary" />
+            <span className="font-bold text-white">MentalCare</span>
           </div>
           <div className="flex flex-1 items-center justify-end space-x-2">
             <nav className="flex items-center">
@@ -28,10 +28,10 @@ export default function Home() {
       <main className="flex-1">
         <div className="container relative flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center">
           <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
               Your Personal AI Mental Health Assistant
             </h1>
-            <p className="mt-6 text-lg text-muted-foreground">
+            <p className="mt-6 text-lg text-gray-400">
               MentalCare is here to listen. Engage in a conversation with an empathetic AI that understands your feelings and offers supportive words when you need them most.
             </p>
             <div className="mt-10">
