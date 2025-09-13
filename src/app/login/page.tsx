@@ -73,10 +73,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="mb-8 flex items-center gap-2">
         <Icons.Logo className="h-8 w-8 text-primary" />
-        <h1 className="text-3xl font-bold tracking-tight">Mindful AI</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-white">Mindful AI</h1>
       </div>
       <Tabs defaultValue="email" className="w-full max-w-sm">
         <TabsList className="grid w-full grid-cols-2">
@@ -84,7 +84,7 @@ export default function LoginPage() {
           <TabsTrigger value="google">Google</TabsTrigger>
         </TabsList>
         <TabsContent value="email">
-          <Card>
+          <Card className="backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Welcome</CardTitle>
               <CardDescription>
@@ -136,7 +136,7 @@ export default function LoginPage() {
           </Card>
         </TabsContent>
         <TabsContent value="google">
-          <Card>
+          <Card className="backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Google Sign-In</CardTitle>
               <CardDescription>

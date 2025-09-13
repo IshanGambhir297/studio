@@ -130,8 +130,8 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-background p-4">
-      <Card className="flex h-full w-full max-w-4xl flex-col shadow-2xl">
+    <div className="flex h-screen w-full flex-col items-center justify-center p-4">
+      <Card className="flex h-full w-full max-w-4xl flex-col shadow-2xl backdrop-blur-sm">
         <CardHeader className="flex flex-row items-center justify-between border-b">
           <div className="flex items-center gap-3">
             <Icons.Logo className="h-8 w-8 text-primary" />

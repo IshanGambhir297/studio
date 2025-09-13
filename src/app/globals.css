@@ -4,9 +4,9 @@
 
 @layer base {
   :root {
-    --background: 0 0% 96.1%; /* #F5F5F5 */
+    --background: 0 0% 96.1% / 0.9; /* #F5F5F5 with transparency */
     --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
+    --card: 0 0% 100% / 0.8; /* Card with transparency */
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
@@ -27,9 +27,9 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 240 10% 3.9% / 0.9;
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --card: 240 10% 3.9% / 0.8;
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
@@ -55,6 +55,10 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image: url('https://images.unsplash.com/photo-1554189097-94974861c74b?q=80&w=2940&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
