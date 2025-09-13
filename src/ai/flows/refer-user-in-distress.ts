@@ -29,6 +29,7 @@ export async function referUserInDistress(input: ReferUserInDistressInput): Prom
 
 const prompt = ai.definePrompt({
   name: 'referUserInDistressPrompt',
+  model: 'googleai/gemini-2.5-flash',
   input: {schema: ReferUserInDistressInputSchema},
   output: {schema: ReferUserInDistressOutputSchema},
   prompt: `You are an AI assistant designed to detect severe distress in user messages.

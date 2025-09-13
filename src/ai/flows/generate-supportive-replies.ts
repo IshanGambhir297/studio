@@ -33,6 +33,7 @@ export type GenerateSupportiveReplyOutput = z.infer<typeof GenerateSupportiveRep
 
 const generateSupportiveReplyPrompt = ai.definePrompt({
   name: 'generateSupportiveReplyPrompt',
+  model: 'googleai/gemini-2.5-flash',
   input: {schema: GenerateSupportiveReplyInputSchema},
   output: {schema: GenerateSupportiveReplyOutputSchema},
   prompt: `You are a mental health support chatbot. Your tone should be empathetic and understanding. Generate a short, supportive reply (one or two sentences) to the user's message, based on its sentiment.
